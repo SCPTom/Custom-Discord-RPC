@@ -1,5 +1,3 @@
-# main.py
-
 import customtkinter as ctk
 import win32gui
 import win32con
@@ -22,6 +20,7 @@ class App(ctk.CTk):
         self.title("Custom Discord RPC by SCPROGRAMS / SCPTOM")
         self.geometry("800x600")
         self.minsize(700, 500)
+        self.maxsize(700, 500)
 
         self.grid_columnconfigure(1, weight=1)
         self.grid_rowconfigure(0, weight=1)
@@ -65,48 +64,85 @@ class App(ctk.CTk):
 
     def create_home_page(self):
         frame = ctk.CTkFrame(self, corner_radius=15)
-        frame.grid_columnconfigure(0, weight=1)
+        frame.grid_columnconfigure((0, 1, 2), weight=1)
 
         row_num = 0
         label = ctk.CTkLabel(frame, text="🏠 Home Page", font=ctk.CTkFont(size=18))
-        label.grid(row=row_num, column=0, padx=20, pady=20)
+        label.grid(row=row_num, column=0, padx=20, pady=20, columnspan=3)
         row_num += 1
 
         if self.rpc.getConnected():
-            
-
 
             self.bigTextLabel = ctk.CTkLabel(frame, text="Big image hover text")
-            self.bigTextLabel.grid(row=row_num, column=0, pady=2)
+            self.bigTextLabel.grid(row=row_num, column=0, pady=(0, 2))
+
+            self.smallTextLabel = ctk.CTkLabel(frame, text="Small image hover text")
+            self.smallTextLabel.grid(row=row_num, column=1, pady=(0, 2))
+
+            self.deailsTextLabel = ctk.CTkLabel(frame, text="Details text")
+            self.deailsTextLabel.grid(row=row_num, column=2, pady=(0, 2))
             row_num += 1
 
+            
             self.bigTextBox = ctk.CTkEntry(frame, placeholder_text=self.rpc.getLargeText())
-            self.bigTextBox.grid(row=row_num, column=0, pady=(0, 5))
-            row_num += 1
+            self.bigTextBox.grid(row=row_num, column=0, pady=(0, 10), padx=10, sticky="ew")
+
+            self.smallTextBox = ctk.CTkEntry(frame, placeholder_text=self.rpc.getSmallText())
+            self.smallTextBox.grid(row=row_num, column=1, pady=(0, 10), padx=10, sticky="ew")
 
             self.detailsBox = ctk.CTkEntry(frame, placeholder_text=self.rpc.getDetails())
-            self.detailsBox.grid(row=row_num, column=0, pady=10)
+            self.detailsBox.grid(row=row_num, column=2, pady=(0, 10), padx=10, sticky="ew")
             row_num += 1
 
+
+            self.stateTextLabel = ctk.CTkLabel(frame, text="State text")
+            self.stateTextLabel.grid(row=row_num, column=0, pady=(0, 2))
+
+            self.extraLabel1 = ctk.CTkLabel(frame, text="Large Image")
+            self.extraLabel1.grid(row=row_num, column=1, pady=(0, 2))
+
+            self.extraLabel2 = ctk.CTkLabel(frame, text="Small Image")
+            self.extraLabel2.grid(row=row_num, column=2, pady=(0, 2))
+            row_num += 1
+
+    
             self.stateBox = ctk.CTkEntry(frame, placeholder_text=self.rpc.getState())
-            self.stateBox.grid(row=row_num, column=0, pady=10)
+            self.stateBox.grid(row=row_num, column=0, pady=(0, 10), padx=10, sticky="ew")
+
+            self.largeImageBox = ctk.CTkEntry(frame, placeholder_text="Large Image Name")
+            self.largeImageBox.grid(row=row_num, column=1, pady=(0, 10), padx=10, sticky="ew")
+
+            self.smallImageBox = ctk.CTkEntry(frame, placeholder_text="Small Image Name")
+            self.smallImageBox.grid(row=row_num, column=2, pady=(0, 10), padx=10, sticky="ew")
             row_num += 1
 
-            updateButton = ctk.CTkButton(
+
+            self.updateButton = ctk.CTkButton(
                 frame,
                 text="Update RPC",
                 command=self.update_rpc_from_fields
             )
-            updateButton.grid(row=row_num, column=0, pady=20)
+            self.updateButton.grid(row=row_num, column=0, columnspan=3, pady=10, padx=10, sticky="ew")
             row_num += 1
 
-            disconnectButton = ctk.CTkButton(frame, text="Disconnect RPC", command= lambda: self.disconnect())
-            disconnectButton.grid(row=row_num, column=0, padx=20, pady=20)
+            self.disconnectButton = ctk.CTkButton(
+                frame,
+                text="Disconnect RPC",
+                command=self.disconnect
+            )
+            self.disconnectButton.grid(row=row_num, column=0, columnspan=3, pady=(0, 20), padx=10, sticky="ew")
             row_num += 1
 
-        if not self.rpc.getConnected():
-            startButton = ctk.CTkButton(frame, text="Start RPC", command= self.start_rpc_thread, width=150, height=40, font=ctk.CTkFont(size=16))
-            startButton.grid(row=row_num, column=0, padx=20, pady=10)
+        else:
+            startButton = ctk.CTkButton(
+                frame,
+                text="Start RPC",
+                command=self.start_rpc_thread,
+                width=150,
+                height=40,
+                font=ctk.CTkFont(size=16)
+            )
+            startButton.grid(row=row_num, column=1, padx=20, pady=10)
             row_num += 5
 
         return frame
@@ -115,6 +151,9 @@ class App(ctk.CTk):
         self.rpc.setLargeText(self.bigTextBox.get())
         self.rpc.setState(self.stateBox.get())
         self.rpc.setDetails(self.detailsBox.get())
+        self.rpc.setSmallText(self.smallTextBox.get())
+        self.rpc.setLargeImage(self.largeImageBox.get())
+        self.rpc.setSmallImage(self.smallImageBox.get())
 
         if self.rpc.updateRPC():
             print("RPC Updated!")
